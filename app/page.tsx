@@ -3,10 +3,14 @@
 
 import { useState, useEffect } from "react";
 import { Todo } from "@/types/todo";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
+  const { data: session } = useSession();
+
+  // Removed invalid top-level JSX expression; authentication UI is handled in the return statement below.
 
   // Fetch Todos on mount
   const fetchTodos = async () => {
@@ -16,33 +20,27 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    if (session) {
+      fetchTodos();
+    } else {
+      setTodos([]); // clear when logged out
+    }
+  }, [session]);
 
   // ➕ Add Todo
-  const addTodo = async() => {
+  const addTodo = async () => {
     if (!input.trim()) return;
 
-    const tempTodo = {
-      id: Date.now(),
-      title: input,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
+    const res = await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: input }),
+    });
 
-    // Optimistic UI update
-    setTodos((prev) => [tempTodo, ...prev]);
+    const newTodo = await res.json();
+
+    setTodos((prev) => [newTodo, ...prev]);
     setInput("");
-
-    try {
-      await fetch("/api/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input }),
-      });
-    } catch (error) {
-      console.error("Failed to add todo:", error);
-    }
   };
 
 
@@ -65,12 +63,11 @@ export default function Home() {
         todo.id === id ? { ...todo, completed } : todo
       )
     );
-    const todo = todos.find((t) => t.id === id);
 
     await fetch("/api/todos", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, completed: !todo?.completed}),
+      body: JSON.stringify({ id, completed }),
     });
   };
 
@@ -78,16 +75,35 @@ export default function Home() {
     <main style={{ padding: "20px" }}>
       <h1>📝 Todo App</h1>
 
+      {/* Auth */}
+      {session ? (
+        <div>
+          <p>Welcome {session.user?.name}</p>
+          <button type="button" onClick={() => signOut()}>Logout</button>
+        </div>
+      ) : (
+        <div>
+          <button type="button" onClick={() => signIn("google")}>
+            Sign in with Google
+          </button>
+          <button type="button" onClick={() => signIn("github")}>
+            Sign in with GitHub
+          </button>
+        </div>
+      )}
+
       {/* Input */}
-      <div>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter a task..."
-        />
-        <button onClick={addTodo}>Add</button>
-      </div>
+      {session && (
+        <div>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter a task..."
+          />
+          <button onClick={addTodo}>Add</button>
+        </div>
+      )}
 
       {/* List */}
       {todos.length === 0 ? (
