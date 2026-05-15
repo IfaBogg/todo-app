@@ -15,9 +15,11 @@ export default function ProfilePageClient() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setName(session?.user?.name || "");
-        setEmail(session?.user?.email || "");
-    }, [session]);
+        if (session?.user) {
+            setName(session.user.name || "");
+            setEmail(session.user.email || "");
+        }
+    }, [session?.user?.name, session?.user?.email]);
 
     const save = async () => {
         setLoading(true);

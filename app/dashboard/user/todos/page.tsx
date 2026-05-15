@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import DashboardClient from "@/app/dashboard/DashboardClient";
 
 export default async function TodosPage() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const session: any = await getServerSession(authOptions as any);
     if (!session) redirect("/auth/signin");
 

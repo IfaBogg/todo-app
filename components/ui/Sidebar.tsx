@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 type Item = { href: string; label: string; icon?: React.ReactNode };
 
-export default function Sidebar({ role = "USER" }: { role?: "USER" | "ADMIN" }) {
+export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
 
   const userItems: Item[] = [
@@ -26,15 +29,24 @@ export default function Sidebar({ role = "USER" }: { role?: "USER" | "ADMIN" }) 
     { href: "/dashboard/admin/settings", label: "Settings" },
   ];
 
+  const role = (session?.user as any)?.role || "USER";
   const items = role === "ADMIN" ? adminItems : userItems;
 
-  return (
-    <aside className={`bg-white dark:bg-slate-900 border-r dark:border-slate-800 ${collapsed ? "w-20" : "w-64"} flex flex-col transition-all`}>
+    <aside
+      className={`bg-white dark:bg-slate-900 border-r dark:border-slate-800 ${
+        collapsed ? "w-20" : "w-64"
+      } flex flex-col transition-all`}
+    >
       <div className="flex items-center justify-between p-4 border-b dark:border-slate-800">
         <Link href="/">
-          <span className="font-semibold text-lg text-slate-900 dark:text-white">MyApp</span>
+          <span className="font-semibold text-lg text-slate-900 dark:text-white">
+            MyApp
+          </span>
         </Link>
-        <button onClick={() => setCollapsed((s) => !s)} className="text-slate-500 dark:text-slate-300">
+        <button
+          onClick={() => setCollapsed((s) => !s)}
+          className="text-slate-500 dark:text-slate-300"
+        >
           {collapsed ? "→" : "←"}
         </button>
       </div>
@@ -43,17 +55,37 @@ export default function Sidebar({ role = "USER" }: { role?: "USER" | "ADMIN" }) 
         {items.map((it) => {
           const active = pathname?.startsWith(it.href);
           return (
-            <Link key={it.href} href={it.href} className={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 ${active ? "bg-slate-100 dark:bg-slate-800 font-medium" : "text-slate-700 dark:text-slate-300"}`}>
-              <span className="w-6 h-6 flex items-center justify-center text-slate-500">■</span>
+            <Link
+              key={it.href}
+              href={it.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                active
+                  ? "bg-slate-100 dark:bg-slate-800 font-medium"
+                  : "text-slate-700 dark:text-slate-300"
+              }`}
+            >
+              <span className="w-6 h-6 flex items-center justify-center text-slate-500">
+                ■
+              </span>
               {!collapsed && <span>{it.label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t dark:border-slate-800">
-        {!collapsed && (
-          <Link href="/auth/signin" className="block text-sm text-slate-600 dark:text-slate-300">Logout</Link>
+      <div className="p-4 border-t dark:border-slate-800 space-y-2">
+        {!collapsed && session && (
+          <>
+            <p className="text-xs text-slate-500 truncate">
+              {session.user?.email}
+            </p>
+            <button
+              onClick={() => signOut()}
+              className="w-full text-left text-sm text-red-600 hover:text-red-700 dark:text-red-400"
+            >
+              Logout
+            </button>
+          </>
         )}
       </div>
     </aside>

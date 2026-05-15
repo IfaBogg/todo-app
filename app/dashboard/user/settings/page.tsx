@@ -34,8 +34,8 @@ export default function SettingsPageClient() {
                     <div>
                         <div className="text-sm text-slate-600">Theme</div>
                         <div className="mt-2 flex gap-2">
-                            <Button onClick={() => { document.documentElement.classList.remove("dark"); localStorage.setItem("theme","light"); }}>Light</Button>
-                            <Button onClick={() => { document.documentElement.classList.add("dark"); localStorage.setItem("theme","dark"); }}>Dark</Button>
+                            <Button onClick={() => { document.documentElement.classList.remove("dark"); localStorage.setItem("theme", "light"); }}>Light</Button>
+                            <Button onClick={() => { document.documentElement.classList.add("dark"); localStorage.setItem("theme", "dark"); }}>Dark</Button>
                         </div>
                     </div>
 
