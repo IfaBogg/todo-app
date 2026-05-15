@@ -6,6 +6,7 @@ import Table from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
 
 export default async function UserDashboardPage() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const session: any = await getServerSession(authOptions as any);
     if (!session) redirect("/auth/signin");
 
