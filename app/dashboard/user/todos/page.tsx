@@ -1,9 +1,7 @@
-import dynamic from "next/dynamic";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-
-const DashboardClient = dynamic(() => import("@/app/dashboard/DashboardClient"), { ssr: false });
+import DashboardClient from "@/app/dashboard/DashboardClient";
 
 export default async function TodosPage() {
     const session: any = await getServerSession(authOptions as any);
