@@ -1,0 +1,8 @@
+-- DropForeignKey
+ALTER TABLE "Todo" DROP CONSTRAINT "Todo_userId_fkey";
+
+-- AlterTable
+ALTER TABLE "Todo" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AddForeignKey
+ALTER TABLE "Todo" ADD CONSTRAINT "Todo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

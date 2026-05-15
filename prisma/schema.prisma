@@ -8,15 +8,26 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
+  id            String   @id @default(cuid())
   name          String?
+  email         String?  @unique
+  emailVerified DateTime?
   image         String?
-  todos         Todo[]
+
+  role                        String   @default("user") // 🔥 ADD THIS
+  password                    String?  // ✅ ADD THIS
+  passwordResetToken          String?
+  passwordResetTokenExpires   DateTime?
+
   accounts      Account[]
   sessions      Session[]
+  todos         Todo[]
 }
+enum Role {
+  USER
+  ADMIN
+}
+
 
 model Account {
   id                String  @id @default(cuid())
@@ -54,10 +65,12 @@ model VerificationToken {
 }
 
 model Todo {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   title     String
-  completed Boolean @default(false)
+  completed Boolean  @default(false)
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
 
   userId String
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -31,17 +31,18 @@ export default function NotificationsPageClient() {
                 </div>
 
                 <div className="mt-4 space-y-3">
-                    {notifs.length === 0 ? <p className="text-sm text-slate-500">No notifications</p> : (
-                            <ul className="space-y-2">
-                                {notifs.map((n) => (
-                                    <li key={n.id} className="border rounded p-3">
-                                        <div className="font-medium">{n.title}</div>
-                                        <div className="text-sm text-slate-500">{n.body}</div>
-                                        <div className="text-xs text-slate-400">{n.time}</div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )
+                    {notifs.length === 0 ? (
+                        <p className="text-sm text-slate-500">No notifications</p>
+                    ) : (
+                        <ul className="space-y-2">
+                            {notifs.map((n) => (
+                                <li key={n.id} className="border rounded p-3">
+                                    <div className="font-medium">{n.title}</div>
+                                    <div className="text-sm text-slate-500">{n.body}</div>
+                                    <div className="text-xs text-slate-400">{n.time}</div>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </div>
             </Card>

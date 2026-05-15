@@ -32,6 +32,7 @@ export default function Sidebar() {
   const role = (session?.user as any)?.role || "USER";
   const items = role === "ADMIN" ? adminItems : userItems;
 
+  return (
     <aside
       className={`bg-white dark:bg-slate-900 border-r dark:border-slate-800 ${
         collapsed ? "w-20" : "w-64"
