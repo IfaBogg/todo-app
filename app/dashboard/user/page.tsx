@@ -1,14 +1,29 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
 
-export default async function UserDashboardPage() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const session: any = await getServerSession(authOptions as any);
-    if (!session) redirect("/auth/signin");
+export default function UserDashboardPage() {
+    const router = useRouter();
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/auth/signin");
+        }
+    }, [status, router]);
+
+    if (status === "loading") {
+        return <p>Loading...</p>;
+    }
+
+    if (!session) {
+        return null;
+    }
 
     // Example data (replace with real queries)
     const stats = { completed: 12, pending: 3, upcoming: 5 };
@@ -27,7 +42,7 @@ export default async function UserDashboardPage() {
                             <h3 className="text-2xl font-semibold">{session.user?.name}</h3>
                         </div>
                         <div>
-                            <Button>New Task</Button>
+                            <Button onClick={() => router.push("/dashboard/user/todos")}>New Task</Button>
                         </div>
                     </div>
                 </Card>
