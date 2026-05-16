@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Todo } from "../generated/prisma/client";
+import { Todo } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { signIn, signOut } from "next-auth/react";
 import toast from "react-hot-toast";
